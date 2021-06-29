@@ -238,10 +238,19 @@
         // If we reverse, the sort needs to be `anti-stable` so that
         // the double negatives cancel out
         if (sortOrder === 'descending') {
-          newRows.sort(stabilize(sortFunction, true));
+          // take out all the rows with "-" value
+          var emptyVals = newRows.filter((a) => { return (a.td === "-" || a.td === "?") })
+          var withVals  = newRows.filter((a) => { return !(a.td === "-" || a.td === "?") })
+          withVals.sort(stabilize(sortFunction, true))
+
+          newRows = [...withVals, ...emptyVals]
         } else {
-          newRows.sort(stabilize(sortFunction, false));
-          newRows.reverse();
+          var emptyVals = newRows.filter((a) => { return (a.td === "-" || a.td === "?") })
+          var withVals  = newRows.filter((a) => { return !(a.td === "-" || a.td === "?") })
+          withVals.sort(stabilize(sortFunction, false))
+          withVals.reverse();
+
+          newRows = [...withVals, ...emptyVals]
         }
 
         // append rows that already exist rather than creating new ones
